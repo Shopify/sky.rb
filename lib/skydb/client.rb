@@ -286,6 +286,16 @@ class SkyDB
       return send(:post, "/tables/#{table.name}/query", q)
     end
 
+    # Retrieves stats such as the event count on a given table.
+    #
+    # @param [Table] table  The table to retrieve stats for.
+    #
+    # @return [Results]  the table stats.
+    def stats(table)
+      raise ArgumentError.new("Table required") if table.nil?
+      return send(:get, "/tables/#{table.name}/stats")
+    end
+
 
     ####################################
     # Utility API

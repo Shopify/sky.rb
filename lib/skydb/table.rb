@@ -134,6 +134,14 @@ class SkyDB
       return client.query(self, q)
     end
 
+    # Retrieves stats for a given table.
+    #
+    # @return [Results]  the table stats.
+    def stats()
+      raise ArgumentError.new("Table not associated with client") if client.nil?
+      return client.stats(self)
+    end
+
 
     ####################################
     # Encoding

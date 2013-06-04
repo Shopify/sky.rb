@@ -58,8 +58,10 @@ class TestClient < MiniTest::Unit::TestCase
     table.add_event("count1", :timestamp => DateTime.iso8601('2013-01-01T00:00:00Z'), :data => {'action' => "A1"})
     table.add_event("count1", :timestamp => DateTime.iso8601('2013-01-01T00:00:05Z'), :data => {'action' => "A2"})
     results = table.query({steps:[{:type => 'selection', :fields => [:name => 'count', :expression => 'count()']}]})
+    stats = table.stats()
     @client.delete_table(table)
     assert_equal({'count' => 5}, results)
+    assert_equal({'count' => 5}, stats)
   end
 
   def test_funnel_query
