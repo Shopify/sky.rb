@@ -1,13 +1,13 @@
 require 'json'
 
-class SkyDB::Connection::EventMachine
+class SkyDB::Connection::Synchrony
   ##############################################################################
   #
   # Methods
   #
   ##############################################################################
   
-  # Executes a RESTful JSON over HTTP POST using EventMachine async callbacks.
+  # Executes a RESTful JSON over HTTP POST using EM-Synchrony fibers.
   def send(options={})
     # Setup connection parameters.
     scheme = "http#{options[:ssl] ? 's' : ''}"

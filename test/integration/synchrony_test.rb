@@ -3,7 +3,7 @@ require 'test_helper'
 require 'em-synchrony'
 require 'em-synchrony/em-http'
 
-class TestEventMachine < MiniTest::Unit::TestCase
+class TestSynchrony < MiniTest::Unit::TestCase
   ##############################################################################
   #
   # Setup / Teardown
@@ -13,7 +13,7 @@ class TestEventMachine < MiniTest::Unit::TestCase
   def setup
     # SkyDB.debug = true
     WebMock.disable!
-    @client = SkyDB::Client.new(:connection => :eventmachine)
+    @client = SkyDB::Client.new(:connection => :synchrony)
     begin; SkyDB::Client.new().delete_table(:name => 'sky-rb-integration'); rescue; end
   end
 
@@ -28,7 +28,7 @@ class TestEventMachine < MiniTest::Unit::TestCase
   #
   ##############################################################################
 
-  def test_async_event_insertion
+  def test_synchrony_add_event
     EM.synchrony do
       table = @client.create_table(:name => 'sky-rb-integration')
       table.create_property(:name => 'action', :transient => true, :data_type => 'factor')

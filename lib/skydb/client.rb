@@ -70,7 +70,7 @@ class SkyDB
 
     # The connection to be used to transfer data to Sky. If the connection is
     # set to a symbol then a connection of that type will be created. The
-    # :ruby and :eventmachine connection types are currently available.
+    # :ruby and :synchrony connection types are currently available.
     attr_accessor :connection
 
     def connection=(value)
@@ -78,8 +78,8 @@ class SkyDB
         case value
         when :ruby
           value = SkyDB::Connection::Ruby.new()
-        when :eventmachine
-          value = SkyDB::Connection::EventMachine.new()
+        when :synchrony
+          value = SkyDB::Connection::Synchrony.new()
         else
           raise SkyError.new("Invalid connection type: #{value}")
         end
