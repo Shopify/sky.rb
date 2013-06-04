@@ -1,7 +1,3 @@
-require 'net/http'
-require 'net/https'
-require 'json'
-
 class SkyDB
   class Client
     ##########################################################################
@@ -15,12 +11,14 @@ class SkyDB
     end
 
     
-    
     ##########################################################################
     #
     # Constants
     #
     ##########################################################################
+
+    # The default type of connection to use if one is not specified.
+    DEFAULT_CONNECTION_TYPE = :ruby
 
     # The default host to connect to if one is not specified.
     DEFAULT_HOST = 'localhost'
@@ -39,6 +37,7 @@ class SkyDB
 
     # Initializes the client.
     def initialize(options={})
+      self.connection = options[:connection] || DEFAULT_CONNECTION_TYPE
       self.host = options[:host] || DEFAULT_HOST
       self.port = options[:port] || DEFAULT_PORT
       self.ssl = options[:ssl] || USE_SSL
@@ -51,6 +50,10 @@ class SkyDB
     #
     ##########################################################################
 
+    ####################################
+    # Connection Properties
+    ####################################
+
     # The name of the host to conect to.
     attr_accessor :host
 
@@ -59,6 +62,31 @@ class SkyDB
 
     # Enable/Disable HTTPS
     attr_accessor :ssl
+
+
+    ####################################
+    # Connection
+    ####################################
+
+    # The connection to be used to transfer data to Sky. If the connection is
+    # set to a symbol then a connection of that type will be created. The
+    # :ruby and :eventmachine connection types are currently available.
+    attr_accessor :connection
+
+    def connection=(value)
+      if value.is_a?(Symbol)
+        case value
+        when :ruby
+          value = SkyDB::Connection::Ruby.new()
+        when :eventmachine
+          value = SkyDB::Connection::EventMachine.new()
+        else
+          raise SkyError.new("Invalid connection type: #{value}")
+        end
+      end
+      
+      @connection = value
+    end
 
 
     ##########################################################################
@@ -282,40 +310,20 @@ class SkyDB
     
     # Executes a RESTful JSON over HTTP POST.
     def send(method, path, data=nil)
-      # Generate a JSON request.
-      request = case method
-        when :get then Net::HTTP::Get.new(path)
-        when :post then Net::HTTP::Post.new(path)
-        when :patch then Net::HTTP::Patch.new(path)
-        when :put then Net::HTTP::Put.new(path)
-        when :delete then Net::HTTP::Delete.new(path)
-        end
-      request.add_field('Content-Type', 'application/json')
-      request.body = JSON.generate(data, :max_nesting => 200) unless data.nil?
-
-      http = Net::HTTP.new(host, port)
-      if ssl
-        http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE #BAD
+      if @connection.nil?
+        raise SkyError.new("Connection unavailable")
       end
-
-      response = http.start {|h| h.request(request) }
       
-      # Parse the body as JSON.
-      json = JSON.parse(response.body) rescue nil
-      message = json['message'] rescue nil
-      
-      warn("#{method.to_s.upcase} #{path}: #{request.body} -> #{response.body}") if SkyDB.debug
-
-      # Process based on the response code.
-      case response
-      when Net::HTTPSuccess then
-        return json
-      else
-        e = ServerError.new(message)
-        e.status = response.code
-        raise e
-      end
+      # Send data over connection and return the results.
+      ret = connection.send(
+        :host => host,
+        :port => port,
+        :ssl => ssl,
+        :method => method,
+        :path => path,
+        :data => data
+      )
+      return ret
     end
   end
 end

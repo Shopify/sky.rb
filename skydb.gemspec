@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency('unindentable', '~> 0.1.0')
   s.add_development_dependency('simplecov', '~> 0.7.1')
   s.add_development_dependency('webmock', '~> 1.11.0')
+  s.add_development_dependency('em-http-request', '~> 1.0.3')
+  s.add_development_dependency('em-synchrony', '~> 1.0.3')
 
   s.test_files   = Dir.glob("test/**/*")
   s.files        = Dir.glob("lib/**/*") + %w(README.md)

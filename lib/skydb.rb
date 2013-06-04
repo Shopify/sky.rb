@@ -47,6 +47,7 @@ class SkyDB
 end
 
 require 'skydb/client'
+require 'skydb/connection'
 require 'skydb/table'
 require 'skydb/property'
 require 'skydb/event'

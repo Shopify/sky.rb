@@ -42,8 +42,8 @@ class TestClient < MiniTest::Unit::TestCase
 
     assert_equal({"timestamp"=>"2013-01-01T01:00:00.000000Z", "data"=>{"age" => 50}}, table.get_event("obj1", DateTime.parse("2013-01-01T01:00:00Z")).to_hash)
     assert_equal([
-      {"timestamp"=>"2013-01-01T00:00:00.000000Z", "data"=>{"action"=>1}},
-      {"timestamp"=>"2013-01-01T00:00:01.000000Z", "data"=>{"action"=>2, "age" => 12}}
+      {"timestamp"=>"2013-01-01T00:00:00.000000Z", "data"=>{"action"=>"A0"}},
+      {"timestamp"=>"2013-01-01T00:00:01.000000Z", "data"=>{"action"=>"A1", "age" => 12}}
       ], table.get_events("obj0").map{|e| e.to_hash})
 
     @client.delete_table(table)
