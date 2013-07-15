@@ -80,6 +80,21 @@ class SkyDB
 
 
     ####################################
+    # Object API
+    ####################################
+
+    # Merges events from one object into another. The source object will be
+    # deleted after the merge is complete.
+    #
+    # @param [String] dest_object_id  the id of the object to merge into.
+    # @param [String] src_object_id  the id of the object to merge from.
+    def merge_objects(dest_object_id, src_object_id, options={})
+      raise ArgumentError.new("Table not associated with client") if client.nil?
+      return client.merge_objects(self, dest_object_id, src_object_id, options)
+    end
+
+
+    ####################################
     # Event API
     ####################################
 

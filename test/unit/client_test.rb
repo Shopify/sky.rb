@@ -95,6 +95,19 @@ class TestClient < MiniTest::Unit::TestCase
 
 
   ######################################
+  # Object API
+  ######################################
+
+  def test_merge_objects
+    req = stub_request(:post, "http://localhost:8585/tables/foo/objects/a/merge")
+      .with(:body => '{"id":"b"}')
+      .to_return(:status => 200)
+    @table.merge_objects("a", "b")
+    assert_requested(req)
+  end
+
+
+  ######################################
   # Event API
   ######################################
 

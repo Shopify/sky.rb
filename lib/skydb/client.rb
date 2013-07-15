@@ -203,6 +203,25 @@ class SkyDB
     # Event API
     ####################################
 
+    # Merges events from one object into another. The source object will be
+    # deleted after the merge is complete.
+    #
+    # @param [Table] table  the table that the objects belong to.
+    # @param [String] dest_object_id  the id of the object to merge into.
+    # @param [String] src_object_id  the id of the object to merge from.
+    def merge_objects(table, dest_object_id, src_object_id, options={})
+      raise ArgumentError.new("Table required") if table.nil?
+      raise ArgumentError.new("Destination object identifier required") if dest_object_id.nil?
+      raise ArgumentError.new("Source object identifier required") if src_object_id.nil?
+      send(:post, "/tables/#{table.name}/objects/#{dest_object_id}/merge", {'id' => src_object_id.to_s})
+      return nil
+    end
+
+
+    ####################################
+    # Event API
+    ####################################
+
     # Retrieves all events for a given object.
     #
     # @return [Array]  the list of events on the table.

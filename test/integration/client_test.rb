@@ -49,6 +49,26 @@ class TestClient < MiniTest::Unit::TestCase
     @client.delete_table(table)
   end
 
+  def test_object_merge
+    table = @client.create_table(:name => 'sky-rb-integration')
+    table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+
+    table.add_event("a", :timestamp => DateTime.iso8601('2013-01-01T00:00:00Z'), :data => {'action' => "A0"})
+    table.add_event("a", :timestamp => DateTime.iso8601('2013-01-03T00:00:00Z'), :data => {'action' => "A2"})
+    table.add_event("b", :timestamp => DateTime.iso8601('2013-01-02T00:00:00Z'), :data => {'action' => "A1"})
+    table.merge_objects("a", "b")
+
+    assert_equal([
+      {"timestamp"=>"2013-01-01T00:00:00.000000Z", "data"=>{"action"=>"A0"}},
+      {"timestamp"=>"2013-01-02T00:00:00.000000Z", "data"=>{"action"=>"A1"}},
+      {"timestamp"=>"2013-01-03T00:00:00.000000Z", "data"=>{"action"=>"A2"}}],
+      table.get_events("a").map{|e| e.to_hash}
+    )
+    assert_equal([], table.get_events("b").map{|e| e.to_hash})
+
+    @client.delete_table(table)
+  end
+
   def test_simple_count_query
     table = @client.create_table(:name => 'sky-rb-integration')
     table.create_property(:name => 'action', :transient => true, :data_type => 'factor')

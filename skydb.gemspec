@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('webmock', '~> 1.11.0')
   s.add_development_dependency('em-http-request', '~> 1.0.3')
   s.add_development_dependency('em-synchrony', '~> 1.0.3')
+  s.add_development_dependency('pry', '~> 0.9.12.2')
 
   s.test_files   = Dir.glob("test/**/*")
   s.files        = Dir.glob("lib/**/*") + %w(README.md)
