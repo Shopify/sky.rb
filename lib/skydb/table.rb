@@ -145,6 +145,10 @@ class SkyDB
     #
     # @return [Results]  the results of the query.
     def query(q)
+      if q.is_a?(String)
+        q = {query:q}
+      end
+
       raise ArgumentError.new("Table not associated with client") if client.nil?
       return client.query(self, q)
     end
