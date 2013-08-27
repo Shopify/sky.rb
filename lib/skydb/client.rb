@@ -254,7 +254,7 @@ class SkyDB
     def query(table, q)
       raise ArgumentError.new("Table required") if table.nil?
       raise ArgumentError.new("Query definition required") if q.nil?
-      q = {:steps => q} if q.is_a?(Array)
+      q = {:statements => q} if q.is_a?(Array)
       return send(:post, "/tables/#{table.name}/query", q)
     end
 

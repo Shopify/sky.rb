@@ -150,7 +150,7 @@ class TestClient < MiniTest::Unit::TestCase
 
   def test_query
     stub_request(:post, "http://localhost:8585/tables/foo/query")
-      .with(:body => '{"steps":[{"type":"selection","fields":[{"name":"count","expression":"count()"}]}]}')
+      .with(:body => '{"statements":[{"type":"selection","fields":[{"name":"count","expression":"count()"}]}]}')
       .to_return(:status => 200, :body => '{"count":5}'+"\n")
     results = @table.query([{:type => 'selection', :fields => [{:name => 'count', :expression => 'count()'}]}])
     assert_equal({'count' => 5}, results)

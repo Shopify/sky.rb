@@ -12,6 +12,8 @@ require 'skydb/version'
 #
 #############################################################################
 
+task :test    => ['test:unit', 'test:integration']
+
 namespace :test do
   Rake::TestTask.new(:unit) do |t|
     t.options = "-v"
