@@ -94,10 +94,10 @@ class TestClient < MiniTest::Unit::TestCase
     table.add_event("fun1", :timestamp => DateTime.iso8601('2013-01-01T00:00:05Z'), :data => {'action' => "A1"})
     table.add_event("fun1", :timestamp => DateTime.iso8601('2013-01-01T00:00:10Z'), :data => {'action' => "A3"})
     results = table.query({
-      steps:[
-        {:type => 'condition', :expression => 'action == "A0"', :steps => [
-          {:type => 'condition', :expression => 'action == "A1"', :within => [1,1], :steps => [
-            {:type => 'condition', :expression => 'true', :within => [1,1], :steps => [
+      statements:[
+        {:type => 'condition', :expression => 'action == "A0"', :statements => [
+          {:type => 'condition', :expression => 'action == "A1"', :within => [1,1], :statements => [
+            {:type => 'condition', :expression => 'true', :within => [1,1], :statements => [
               {:type => 'selection', :dimensions => ['action'], :fields => [:name => 'count', :expression => 'count()']}
             ]}
           ]}
@@ -106,5 +106,19 @@ class TestClient < MiniTest::Unit::TestCase
     })
     @client.delete_table(table)
     assert_equal({"action"=>{"A2"=>{"count"=>1}, "A3"=>{"count"=>1}}}, results)
+  end
+
+  def test_skyql_query
+    table = @client.create_table(:name => 'sky-rb-integration')
+    table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+    table.add_event("count0", :timestamp => DateTime.iso8601('2013-01-01T00:00:00Z'), :data => {'action' => "A0"})
+    table.add_event("count0", :timestamp => DateTime.iso8601('2013-01-01T00:00:01Z'), :data => {'action' => "A1"})
+    table.add_event("count0", :timestamp => DateTime.iso8601('2013-01-01T00:00:02Z'), :data => {'action' => "A2"})
+    table.add_event("count1", :timestamp => DateTime.iso8601('2013-01-01T00:00:00Z'), :data => {'action' => "A1"})
+    table.add_event("count1", :timestamp => DateTime.iso8601('2013-01-01T00:00:05Z'), :data => {'action' => "A2"})
+    results = table.query({:statements => "SELECT count() AS myCount GROUP BY action"})
+    @client.delete_table(table)
+
+    assert_equal({"action"=>{"A0"=>{"myCount"=>1}, "A1"=>{"myCount"=>2}, "A2"=>{"myCount"=>2}}}, results)
   end
 end
