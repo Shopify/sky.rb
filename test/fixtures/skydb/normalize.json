@@ -1,0 +1,6 @@
+[
+  {"gender":"male", "state":"CO", "count":1, "sum":2},
+  {"gender":"male", "state":"CA", "count":3, "sum":4},
+  {"gender":"female", "state":"CO", "count":5, "sum":6},
+  {"gender":"female", "state":"CA", "count":7, "sum":8}
+]

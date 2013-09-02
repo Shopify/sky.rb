@@ -1,0 +1,12 @@
+{
+  "gender":{
+    "male":{
+      "count":1,
+      "sum":2
+    },
+    "female":{
+      "count":3,
+      "sum":4
+    }
+  }
+}
