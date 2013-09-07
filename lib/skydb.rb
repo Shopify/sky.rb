@@ -34,9 +34,11 @@ class SkyDB
 
     fields = fields.dup()
     field = fields.shift()
-    rows = obj[field].keys.map do |k|
-      denormalize(obj[field][k], fields).each do |item|
-        item[field] = k
+    if obj[field].is_a?(Hash)
+      rows = obj[field].keys.map do |k|
+        denormalize(obj[field][k], fields).each do |item|
+          item[field] = k
+        end
       end
     end
 
