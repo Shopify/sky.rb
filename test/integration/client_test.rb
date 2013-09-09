@@ -121,4 +121,28 @@ class TestClient < MiniTest::Unit::TestCase
 
     assert_equal({"action"=>{"A0"=>{"myCount"=>1}, "A1"=>{"myCount"=>2}, "A2"=>{"myCount"=>2}}}, results)
   end
+
+  def test_querying_string_values_with_quotes
+    table = @client.create_table(:name => 'sky-rb-integration')
+    table.create_property(:name => 'action', :transient => true, :data_type => 'string')
+    values = ["", "'", '"', '"\'']
+    values.each{ | string | table.add_event("000", :timestamp => DateTime.now, :data => {'action' => string}) }
+    #confirm that the values made it into the database unmodified
+    result = table.query({statements: 'SELECT count() AS count GROUP BY action'})['action']
+    assert_equal result.keys.sort, values.sort
+    result.each { |k,v| assert_equal({'count' => 1}, v)}
+    [ "''",
+      '""',
+      "'\"'",
+      '"\'"',
+      '"\\"\'"',
+      "'\"\\\''",
+    ].each_with_index do | expression, index |
+      query = "WHEN action == #{expression} THEN SELECT count() AS count END"
+      result = table.query({statements: query})
+      assert_equal({'count' => 1}, result, "Failed expression #{index}: action == #{expression}")
+    end
+  ensure
+    @client.delete_table(table) if table
+  end  
 end
